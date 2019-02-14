@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);
 
 	// Setup window position, size, and title
-	glutInitWindowPosition(500, 60);
+	glutInitWindowPosition(60, 60);
 	glutInitWindowSize(width, height);
 	glutCreateWindow("CSE165 OpenGL Demo");
 
