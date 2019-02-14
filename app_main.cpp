@@ -10,6 +10,7 @@
 #endif
 
 #include "SOIL.h"
+#include "board.h"
 //#include <glad/glad.h>
 //#include <GLFW/glfw3.h>
 
