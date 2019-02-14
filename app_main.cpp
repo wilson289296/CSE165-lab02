@@ -76,7 +76,7 @@ void appDrawScene() {
 	// Set up the transformations stack
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
+	//board grid, this will always exist
 	glColor3f(1, 1, 1);
 	glLineWidth(5);
 	glBegin(GL_LINES);
@@ -89,6 +89,7 @@ void appDrawScene() {
 	glVertex2f(1, -0.333);
 	glVertex2f(-1, -0.333);
 	glEnd();
+	
 
 	/*
     // Draw stuff here
@@ -100,6 +101,7 @@ void appDrawScene() {
 	glVertex2f(0,0);
 	glEnd();
 	*/
+	//yellow dot that follows cursor on click
 	glColor3f(0.8, 0.8, 0.2);
 	glPointSize(10.0);
 	glBegin(GL_POINTS);
@@ -343,7 +345,7 @@ void appKeyboardFunc(unsigned char key, int x, int y) {
 	//	key  - the key that was pressed
 	//	x, y - coordinates of the mouse when key is pressed
 	//-------------------------------------------------------
-	
+	/* for interactivity test
     switch (key) {
         case 'r':
             r=1.0;
@@ -357,7 +359,8 @@ void appKeyboardFunc(unsigned char key, int x, int y) {
         default:
             break;
     }
-
+    */
+	
 	// After all the state changes, redraw the scene
 	glutPostRedisplay();
 }
