@@ -16,6 +16,7 @@ class Board{
 		Board();
 		void setelement(int x, int y, bool iscircle);
 		//doesn't check whether spot is empty before setting
+		int getelement(int x, int y);
 		bool ispopulated(int x, int y);
 		//true = that spot is populated
 		//false = that spot is empty
@@ -26,11 +27,14 @@ class Board{
 		//if 3, tie
 		void clearboard();
 		//unconditionally clears board
+		void inputtosector(float &x, float &y);
 		
 		bool ended;
+		bool over;
 		bool started;
 		bool issingleplayer;
-	
+		bool circleturn;
+		//first turn is always circle
 };
 
 #endif

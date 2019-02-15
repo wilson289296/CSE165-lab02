@@ -9,7 +9,7 @@
 #include <GL/freeglut.h>
 #endif
 
-#include "SOIL.h"
+//#include "SOIL.h"
 #include "board.h"
 //#include <glad/glad.h>
 //#include <GLFW/glfw3.h>
@@ -17,7 +17,7 @@
 using namespace std;
 
 // Store the width and height of the window
-int width = 800, height = 800;
+int width = 700, height = 700;
 
 //PROTOTYPES FOR ORGANIZATION'S SAKE
 void appDrawScene();
@@ -79,6 +79,7 @@ void appDrawScene() {
 	glLoadIdentity();
 	//board grid, this will always exist if gamestarted == true
 	if (game.started){	
+		//cout << "game state started\n";
 		glColor3f(1, 1, 1);
 		glLineWidth(5);
 		glBegin(GL_LINES);
@@ -90,7 +91,28 @@ void appDrawScene() {
 		glVertex2f(-1, 0.333);
 		glVertex2f(1, -0.333);
 		glVertex2f(-1, -0.333);
+		
 		glEnd();
+		
+		char cross = 'X';
+		char circle = 'O';
+		float xlocations [3] = {-0.6675,-0.0025,0.675}; // 0,1,2
+		float ylocations [3] = {0.665,-0.0025,-0.665}; // 0,1,2
+		glColor3f(1,1,1);
+		for(int i = 0; i < 3; i++){
+			for(int j = 0; j < 3; j++){
+				glRasterPos2f(xlocations[i], ylocations[j]);
+				if(game.getelement(i,j) == 1){
+					glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,circle);
+					//cout << "drawing circle\n";
+				} else if(game.getelement(i,j) == -1){
+					glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,cross);
+					//cout << "drawing cross\n";
+				}
+			}
+		}
+		
+		
 	} else {
 		string printthis = "Click left mouse to play single player,";
 		glColor3f(1,1,1);
@@ -104,6 +126,8 @@ void appDrawScene() {
 			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, printthis[i]);
 		}
 	}
+	
+	
 
 	/*
     // Draw stuff here
@@ -264,7 +288,7 @@ void appReshapeFunc(int w, int h) {\
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(winXmin, winXmax, winYmin, winYmax, -1, 1);*/
-	glutReshapeWindow(800, 800); //lmao you thought you could resize the window
+	glutReshapeWindow(width, height); //lmao you thought you could resize the window
 }
 
 void appMouseFunc(int b, int s, int x, int y) {
@@ -298,37 +322,100 @@ void appMouseFunc(int b, int s, int x, int y) {
 	}
 */
 	//CLICK SECTOR DETECTOR
-	if(s == GLUT_DOWN){
-		if(mx > -1 && mx < -0.333){
-			if(my < 1 && my > 0.333){
-				cout << "Clicked sector 1\n";
-			} else if(my < 0.333 && my > -0.333){
-				cout << "Clicked sector 4\n";
-			} else if(my < -0.333 && my > -1){
-				cout << "Clicked sector 7\n";
-			}
-		} else if(mx > -0.333 && mx < 0.333){
-			if(my < 1 && my > 0.333){
-				cout << "Clicked sector 2\n";
-			} else if(my < 0.333 && my > -0.333){
-				cout << "Clicked sector 5\n";
-			} else if(my < -0.333 && my > -1){
-				cout << "Clicked sector 8\n";
-			}
-		} else if(mx > 0.333 && mx < 1){
-			if(my < 1 && my > 0.333){
-				cout << "Clicked sector 3\n";
-			} else if(my < 0.333 && my > -0.333){
-				cout << "Clicked sector 6\n";
-			} else if(my < -0.333 && my > -1){
-				cout << "Clicked sector 9\n";
+	//Only runs when game is in progress
+	game.inputtosector(mx, my);
+	if(game.started && !game.ended){
+		if(s == GLUT_DOWN){
+			/*
+			if(mx > -1 && mx < -0.333){
+				if(my < 1 && my > 0.333){
+					cout << "Clicked sector 1\n";
+					boardx = 0; 
+					boardy = 0;
+				} else if(my < 0.333 && my > -0.333){
+					cout << "Clicked sector 4\n";
+					boardx = 0; 
+					boardy = 1;
+				} else if(my < -0.333 && my > -1){
+					cout << "Clicked sector 7\n";
+					boardx = 0; 
+					boardy = 2;
+				}
+			} else if(mx > -0.333 && mx < 0.333){
+				if(my < 1 && my > 0.333){
+					cout << "Clicked sector 2\n";
+					boardx = 1; 
+					boardy = 0;
+				} else if(my < 0.333 && my > -0.333){
+					cout << "Clicked sector 5\n";
+					boardx = 1; 
+					boardy = 1;
+				} else if(my < -0.333 && my > -1){
+					cout << "Clicked sector 8\n";
+					boardx = 1; 
+					boardy = 2;
+				}
+			} else if(mx > 0.333 && mx < 1){
+				if(my < 1 && my > 0.333){
+					cout << "Clicked sector 3\n";
+					boardx = 2; 
+					boardy = 0;
+				} else if(my < 0.333 && my > -0.333){
+					cout << "Clicked sector 6\n";
+					boardx = 2; 
+					boardy = 1;
+				} else if(my < -0.333 && my > -1){
+					cout << "Clicked sector 9\n";
+					boardx = 2; 
+					boardy = 2;
+				}
+			} */ //translate scene coordinates to board coordinates
+			//int(mx);
+			//int(my);
+			if (!game.ispopulated(mx,my)){
+				game.setelement(mx,my,game.circleturn);
+				cout << "Piece placed at: (" << mx << ", " << my << ").\n";
+				if(game.circleturn){
+					cout << "It's now circle's turn\n";
+				} else {
+					cout << "It's now cross's turn\n";
+				}
+			} else if(game.ispopulated(mx,my)){
+				
+				cout << "That location is already populated!\n";
 			}
 		}
 	}
 	if(!game.started){
-		
+		if(s == GLUT_DOWN){
+			game.started = true;
+			if(b == GLUT_LEFT_BUTTON){
+				game.issingleplayer = true;
+				cout << "Game state set to single player\n";
+			} else {
+				game.issingleplayer = false;
+				cout << "Game state set to two player\n";
+			}
+		}
 	}
 	
+	if (game.checkresults() == 1 || game.checkresults() == 2 || game.checkresults() == 3){
+		game.ended = true;
+		//cout << "game set to ended/n:";
+	}
+	if(game.ended && !game.over){
+		//cout << "result says: " << game.checkresults() << endl;
+		int result = game.checkresults();
+		if(result == 1){
+			cout << "circle wins\n";
+		} else if(result == 2){
+			cout << "cross wins\n";
+		} else {
+			cout << "it's a tie\n";
+		}
+		game.over = true;\
+		//cout << "game set to over/n:";
+	}
 	// Redraw the scene by calling appDrawScene above
 	// so that the point we added above will get painted
 	glutPostRedisplay();
@@ -347,7 +434,8 @@ void appMotionFunc(int x, int y) {
 	windowToScene(mx, my);
 	pos_x = mx;
 	pos_y=my;
-	cout << mx << " " << my << endl;
+	
+	//cout << mx << " " << my << endl;
 
 	// Again, we redraw the scene
 	glutPostRedisplay();
@@ -361,21 +449,23 @@ void appKeyboardFunc(unsigned char key, int x, int y) {
 	//	key  - the key that was pressed
 	//	x, y - coordinates of the mouse when key is pressed
 	//-------------------------------------------------------
-	/* for interactivity test
+	//for interactivity test
     switch (key) {
-        case 'r':
-            r=1.0;
-			g=0.0;
-			b=0.0;
-            break;
-		case 'g':
-			r=0.0;
-			g=1.0;
-			b=0.0;
+		case 'q': //q to debug, displays slots[][]
+			for(int i = 0; i < 3; i++){
+				for(int j = 0; j < 3; j++){
+					cout << game.getelement(i,j);
+				}
+			}
+			cout << endl;
+			break;
+		case 'r':
+			game.clearboard();
+		break;
         default:
             break;
     }
-    */
+    
 	
 	// After all the state changes, redraw the scene
 	glutPostRedisplay();
