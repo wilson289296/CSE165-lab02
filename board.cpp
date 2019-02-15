@@ -2,6 +2,7 @@
 #include <iostream>
 using namespace std;
 
+//constructor
 Board::Board(){
 	//initializing empty board
 	for(int i = 0; i < 3; i++){
@@ -40,9 +41,9 @@ bool Board::ispopulated(int x, int y){
 
 int Board::checkresults(){
 	//first, check if anyone has won
-	//1-3 horizontal
-	//4-6 vertical
-	//7-8 diagonal
+	//1-3 horizontal win cases
+	//4-6 vertical win cases
+	//7-8 diagonal win cases
 	if (slots[0][0] != 0 && slots[0][0] == slots[1][0] && slots[1][0] == slots[2][0]){
 		if (slots[0][0] == 1){
 			return 1; //circle wins
@@ -104,22 +105,21 @@ int Board::checkresults(){
 		}
 	}
 	
-	//check if entire board is populated
+	//check if entire board is populated, if so throw tie flag
 	bool boardfull = true;
 	for(int i = 0; i < 3; i++){
 		for(int j = 0; j < 3; j++){
 			if(slots[i][j] == 0){ //if theres an empty spot
 				boardfull = false;  //then throw not full flag
-				//cout << "board is not full\n";
 			}
 		}
 	}
-	
 	if (boardfull){
-		//cout << "board is full\n";
 		return 3; //report tie
 	}
-	return 0; //report game still happening
+	
+	//otherwise, report game still happening
+	return 0;
 }
 
 void Board::clearboard(){

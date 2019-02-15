@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cmath>
-//git test
+
 #if defined WIN32
 #include <freeglut.h>
 #elif defined __APPLE__
@@ -9,10 +9,7 @@
 #include <GL/freeglut.h>
 #endif
 
-//#include "SOIL.h"
 #include "board.h"
-//#include <glad/glad.h>
-//#include <GLFW/glfw3.h>
 
 using namespace std;
 
@@ -28,9 +25,9 @@ void appMotionFunc(int, int);
 void appKeyboardFunc(unsigned char, int, int);
 void idle();
 
-int r, g, b;
-float pos_x, pos_y;
-Board game;
+//some global vars
+string printstring = " "; //for system messages during started phase
+Board game; //object containing game logic
 
 
 int main(int argc, char** argv) {
@@ -47,7 +44,6 @@ int main(int argc, char** argv) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_POINT_SMOOTH);
 	glEnable(GL_LINE_SMOOTH);
-
 
 	// Set callback for drawing the scene
 	glutDisplayFunc(appDrawScene);
@@ -77,9 +73,10 @@ void appDrawScene() {
 	// Set up the transformations stack
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	//board grid, this will always exist if gamestarted == true
+	
+	//board + element graphics, only get drawn during gameplay phase
 	if (game.started){	
-		//cout << "game state started\n";
+		//board grid
 		glColor3f(1, 1, 1);
 		glLineWidth(5);
 		glBegin(GL_LINES);
@@ -91,131 +88,48 @@ void appDrawScene() {
 		glVertex2f(-1, 0.333);
 		glVertex2f(1, -0.333);
 		glVertex2f(-1, -0.333);
-		
 		glEnd();
+		//done drawing board
 		
+		//rendering game pieces
 		char cross = 'X';
 		char circle = 'O';
+		//preset scene coords for pieces to go, correlated with board coords
 		float xlocations [3] = {-0.6675,-0.0025,0.675}; // 0,1,2
 		float ylocations [3] = {0.665,-0.0025,-0.665}; // 0,1,2
-		glColor3f(1,1,1);
+		//start drawing pieces, only draw if they exist
 		for(int i = 0; i < 3; i++){
 			for(int j = 0; j < 3; j++){
 				glRasterPos2f(xlocations[i], ylocations[j]);
 				if(game.getelement(i,j) == 1){
 					glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,circle);
-					//cout << "drawing circle\n";
 				} else if(game.getelement(i,j) == -1){
 					glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,cross);
-					//cout << "drawing cross\n";
 				}
 			}
 		}
 		
+		//system message handler, red left bottom corner
+		glColor3f(1,0.3,0.3);
+		glRasterPos2f(-0.99,-0.98);
+		for(int i = 0; i < printstring.length(); i++){
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, printstring[i]);
+		}
 		
-	} else {
-		string printthis = "Click left mouse to play single player,";
+	} else { //this is called when not in gameplay phase, like ended phase or over phase
+		//printing instructions to scene
+		string printthis = "Click left mouse to play single player,"; //line to be printed
 		glColor3f(1,1,1);
-		glRasterPos2f(-0.39,0.05);
+		glRasterPos2f(-0.39,0.05); //set printing location of first line
 		for(int i = 0; i < printthis.length(); i++){
 			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, printthis[i]);
 		}
-		printthis = "click right mouse to play two player.";
-		glRasterPos2f(-0.38,-0.001);
+		printthis = "click right mouse to play two player."; //redefine line to be printed
+		glRasterPos2f(-0.38,-0.001); //set printing location of second line
 		for(int i = 0; i < printthis.length(); i++){
 			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, printthis[i]);
 		}
 	}
-	
-	
-
-	/*
-    // Draw stuff here
-	//drawing a polygon for interactivity
-	glColor3f(r, g, b);
-	glBegin(GL_POLYGON);
-	glVertex2f(0.25, 0.25);
-	glVertex2f(0.75, 0.5);
-	glVertex2f(0,0);
-	glEnd();
-	*/
-	/*yellow dot that follows cursor on click
-	glColor3f(0.8, 0.8, 0.2);
-	glPointSize(10.0);
-	glBegin(GL_POINTS);
-	glVertex2f(pos_x, pos_y);
-	glEnd();
-	*/
-	
-  /* LAB 1 STUFF
-	glColor3f(1.0,1.0,1.0);
-	glPointSize(10);
-	
-	//START W
-	glBegin(GL_POLYGON);
-	glVertex2f(-0.9,0.8);
-	glVertex2f(-0.9,0.7);
-	glVertex2f(-0.7,-0.8);
-	glVertex2f(-0.7,-0.7);
-	glEnd();
-	
-	glBegin(GL_POLYGON);
-	glVertex2f(-0.7,-0.8);
-	glVertex2f(-0.7,-0.7);
-	glVertex2f(-0.5,0.8);
-	glVertex2f(-0.5,0.7);
-	glEnd();
-	
-	glBegin(GL_POLYGON);
-	glVertex2f(-0.5,0.8);
-	glVertex2f(-0.5,0.7);
-	glVertex2f(-0.3,-0.7);
-	glVertex2f(-0.3,-0.8);
-	glEnd();
-	
-	glBegin(GL_POLYGON);
-	glVertex2f(-0.3,-0.7);
-	glVertex2f(-0.3,-0.8);
-	glVertex2f(-0.1,0.8);
-	glVertex2f(-0.1,0.7);
-	glEnd();
-	
-	//START S
-	glBegin(GL_POLYGON);
-	glVertex2f(0.9,0.5);
-	glVertex2f(0.9,0.4);
-	glVertex2f(0.5,0.7);
-	glVertex2f(0.5,0.8);
-	glEnd();
-	
-	glBegin(GL_POLYGON);
-	glVertex2f(0.5,0.7);
-	glVertex2f(0.5,0.8);
-	glVertex2f(0.1,0.5);
-	glVertex2f(0.1,0.4);
-	glEnd();
-	
-	glBegin(GL_POLYGON);
-	glVertex2f(0.1,0.5);
-	glVertex2f(0.1,0.4);
-	glVertex2f(0.9,-0.5);
-	glVertex2f(0.9,-0.4);
-	glEnd();
-	
-	glBegin(GL_POLYGON);
-	glVertex2f(0.9,-0.5);
-	glVertex2f(0.9,-0.4);
-	glVertex2f(0.5,-0.7);
-	glVertex2f(0.5,-0.8);
-	glEnd();
-	
-	glBegin(GL_POLYGON);
-	glVertex2f(0.5,-0.7);
-	glVertex2f(0.5,-0.8);
-	glVertex2f(0.1,-0.5);
-	glVertex2f(0.1,-0.4);
-	glEnd();
-*/
 	
 	// We have been drawing everything to the back buffer
 	// Swap the buffers to see the result of what we drew
@@ -224,7 +138,6 @@ void appDrawScene() {
 }
 
 void windowToScene(float& x, float& y) {
-	
 	//-------------------------------------------------------
 	// A function to convert window coordinates to scene
 	// We use it when a mouse event is handled
@@ -245,6 +158,7 @@ void appReshapeFunc(int w, int h) {\
 	//	x, y - coordinates of the mouse when click occured
 	//-------------------------------------------------------
 	/* Screw that, it messes with the coordinates
+	// but I guess I'll keep it for history anyway
 	// Window size has changed
 	width = w;
 	height = h;
@@ -300,122 +214,58 @@ void appMouseFunc(int b, int s, int x, int y) {
 	//	s 	 - state, either mouse-up or mouse-down
 	//	x, y - coordinates of the mouse when click occured
 	//-------------------------------------------------------
-	
+		
+	//in-game placement mechanics
 	// Convert from Window to Scene coordinates
 	float mx = (float)x;
 	float my = (float)y;
-
 	windowToScene(mx, my);
-	/* Click/release reporter
-
-	if(b == GLUT_LEFT_BUTTON && s == GLUT_DOWN){
-		cout << "Left mouse button pressed\n";
-	}
-	if(b == GLUT_LEFT_BUTTON && s == GLUT_UP){
-		cout << "Left mouse button released\n";
-	}
-	if(b == GLUT_RIGHT_BUTTON && s == GLUT_DOWN){
-		cout << "Right mouse button pressed\n";
-	}
-	if(b == GLUT_RIGHT_BUTTON && s == GLUT_UP){
-		cout << "Right mouse button released\n";
-	}
-*/
-	//CLICK SECTOR DETECTOR
-	//Only runs when game is in progress
-	game.inputtosector(mx, my);
-	if(game.started && !game.ended){
-		if(s == GLUT_DOWN){
-			/*
-			if(mx > -1 && mx < -0.333){
-				if(my < 1 && my > 0.333){
-					cout << "Clicked sector 1\n";
-					boardx = 0; 
-					boardy = 0;
-				} else if(my < 0.333 && my > -0.333){
-					cout << "Clicked sector 4\n";
-					boardx = 0; 
-					boardy = 1;
-				} else if(my < -0.333 && my > -1){
-					cout << "Clicked sector 7\n";
-					boardx = 0; 
-					boardy = 2;
-				}
-			} else if(mx > -0.333 && mx < 0.333){
-				if(my < 1 && my > 0.333){
-					cout << "Clicked sector 2\n";
-					boardx = 1; 
-					boardy = 0;
-				} else if(my < 0.333 && my > -0.333){
-					cout << "Clicked sector 5\n";
-					boardx = 1; 
-					boardy = 1;
-				} else if(my < -0.333 && my > -1){
-					cout << "Clicked sector 8\n";
-					boardx = 1; 
-					boardy = 2;
-				}
-			} else if(mx > 0.333 && mx < 1){
-				if(my < 1 && my > 0.333){
-					cout << "Clicked sector 3\n";
-					boardx = 2; 
-					boardy = 0;
-				} else if(my < 0.333 && my > -0.333){
-					cout << "Clicked sector 6\n";
-					boardx = 2; 
-					boardy = 1;
-				} else if(my < -0.333 && my > -1){
-					cout << "Clicked sector 9\n";
-					boardx = 2; 
-					boardy = 2;
-				}
-			} */ //translate scene coordinates to board coordinates
-			//int(mx);
-			//int(my);
-			if (!game.ispopulated(mx,my)){
-				game.setelement(mx,my,game.circleturn);
-				cout << "Piece placed at: (" << mx << ", " << my << ").\n";
+	//place pieces and switch turns based on click location
+	if(game.started && !game.ended){ //only runs when game is in progress
+		if(s == GLUT_DOWN){ //ignores click releases
+			game.inputtosector(mx, my); //translate scene coordinates to board coordinates
+			if (!game.ispopulated(mx,my)){ //checks if something in slot
+				game.setelement(mx,my,game.circleturn); //sets slot to appropriate piece
 				if(game.circleturn){
-					cout << "It's now circle's turn\n";
+					printstring = "It's now circle's turn!";
 				} else {
-					cout << "It's now cross's turn\n";
+					printstring = "It's now cross's turn!";
 				}
 			} else if(game.ispopulated(mx,my)){
-				
-				cout << "That location is already populated!\n";
-			}
-		}
-	}
-	if(!game.started){
-		if(s == GLUT_DOWN){
-			game.started = true;
-			if(b == GLUT_LEFT_BUTTON){
-				game.issingleplayer = true;
-				cout << "Game state set to single player\n";
-			} else {
-				game.issingleplayer = false;
-				cout << "Game state set to two player\n";
+				printstring = "That location is already populated!";
 			}
 		}
 	}
 	
+	//inital menu system
+	if(!game.started){
+		if(s == GLUT_DOWN){
+			if(b == GLUT_LEFT_BUTTON){
+				game.issingleplayer = true;
+				printstring = "Game state set to single player";
+				game.started = true;
+			} else {
+				game.issingleplayer = false;
+				printstring = "Game state set to two player";
+				game.started = true;
+			}
+		}
+	}
+	
+	//checks results after input
 	if (game.checkresults() == 1 || game.checkresults() == 2 || game.checkresults() == 3){
 		game.ended = true;
-		//cout << "game set to ended/n:";
-	}
-	if(game.ended && !game.over){
-		//cout << "result says: " << game.checkresults() << endl;
 		int result = game.checkresults();
 		if(result == 1){
-			cout << "circle wins\n";
+			printstring = "Circle wins! Press 'R' to restart or ESC to quit.";
 		} else if(result == 2){
-			cout << "cross wins\n";
-		} else {
-			cout << "it's a tie\n";
+			printstring = "Cross wins! Press 'R' to restart or ESC to quit.";
+		} else if(result == 3){
+			printstring = "It's a tie! Press 'R' to restart or ESC to quit.";
 		}
-		game.over = true;\
-		//cout << "game set to over/n:";
+		game.over = true;
 	}
+	
 	// Redraw the scene by calling appDrawScene above
 	// so that the point we added above will get painted
 	glutPostRedisplay();
@@ -428,15 +278,6 @@ void appMotionFunc(int x, int y) {
 	// Arguments: 	
 	//	x, y - current coordinates of the mouse
 	//-------------------------------------------------------
-	float mx = (float)x;
-	float my = (float)y;
-
-	windowToScene(mx, my);
-	pos_x = mx;
-	pos_y=my;
-	
-	//cout << mx << " " << my << endl;
-
 	// Again, we redraw the scene
 	glutPostRedisplay();
 }
@@ -459,14 +300,15 @@ void appKeyboardFunc(unsigned char key, int x, int y) {
 			}
 			cout << endl;
 			break;
-		case 'r':
+		case 'r': //restart the game
 			game.clearboard();
-		break;
+		break; //quit the game
+		case 27:
+			exit(0);
         default:
             break;
     }
     
-	
 	// After all the state changes, redraw the scene
 	glutPostRedisplay();
 }

@@ -12,6 +12,7 @@ class Board{
 		//0 indicates empty element
 		//1 indicates circle
 		//-1 indicates cross
+		
 	public:
 		Board();
 		void setelement(int x, int y, bool iscircle);
@@ -26,15 +27,19 @@ class Board{
 		//if 2, cross wins
 		//if 3, tie
 		void clearboard();
-		//unconditionally clears board
+		//unconditionally clears board and data members
 		void inputtosector(float &x, float &y);
+		//translator from scene coords to board coords
 		
+		//state members
+		bool started;
 		bool ended;
 		bool over;
-		bool started;
-		bool issingleplayer;
 		bool circleturn;
-		//first turn is always circle
+		
+		//mode member
+		bool issingleplayer;
+
 };
 
 #endif
