@@ -26,6 +26,10 @@ class Board{
 		//if 3, tie
 		void clearboard();
 		//unconditionally clears board
+		
+		bool ended;
+		bool started;
+		bool issingleplayer;
 	
 };
 

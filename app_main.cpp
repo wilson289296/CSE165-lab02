@@ -30,6 +30,7 @@ void idle();
 
 int r, g, b;
 float pos_x, pos_y;
+Board game;
 
 
 int main(int argc, char** argv) {
@@ -76,20 +77,33 @@ void appDrawScene() {
 	// Set up the transformations stack
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	//board grid, this will always exist
-	glColor3f(1, 1, 1);
-	glLineWidth(5);
-	glBegin(GL_LINES);
-	glVertex2f(0.333, 1);
-	glVertex2f(0.333, -1);
-	glVertex2f(-0.333, 1);
-	glVertex2f(-0.333, -1);
-	glVertex2f(1, 0.333);
-	glVertex2f(-1, 0.333);
-	glVertex2f(1, -0.333);
-	glVertex2f(-1, -0.333);
-	glEnd();
-	
+	//board grid, this will always exist if gamestarted == true
+	if (game.started){	
+		glColor3f(1, 1, 1);
+		glLineWidth(5);
+		glBegin(GL_LINES);
+		glVertex2f(0.333, 1);
+		glVertex2f(0.333, -1);
+		glVertex2f(-0.333, 1);
+		glVertex2f(-0.333, -1);
+		glVertex2f(1, 0.333);
+		glVertex2f(-1, 0.333);
+		glVertex2f(1, -0.333);
+		glVertex2f(-1, -0.333);
+		glEnd();
+	} else {
+		string printthis = "Click left mouse to play single player,";
+		glColor3f(1,1,1);
+		glRasterPos2f(-0.39,0.05);
+		for(int i = 0; i < printthis.length(); i++){
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, printthis[i]);
+		}
+		printthis = "click right mouse to play two player.";
+		glRasterPos2f(-0.38,-0.001);
+		for(int i = 0; i < printthis.length(); i++){
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, printthis[i]);
+		}
+	}
 
 	/*
     // Draw stuff here
@@ -101,13 +115,13 @@ void appDrawScene() {
 	glVertex2f(0,0);
 	glEnd();
 	*/
-	//yellow dot that follows cursor on click
+	/*yellow dot that follows cursor on click
 	glColor3f(0.8, 0.8, 0.2);
 	glPointSize(10.0);
 	glBegin(GL_POINTS);
 	glVertex2f(pos_x, pos_y);
 	glEnd();
-	
+	*/
 	
   /* LAB 1 STUFF
 	glColor3f(1.0,1.0,1.0);
@@ -311,7 +325,9 @@ void appMouseFunc(int b, int s, int x, int y) {
 			}
 		}
 	}
-	
+	if(!game.started){
+		
+	}
 	
 	// Redraw the scene by calling appDrawScene above
 	// so that the point we added above will get painted
