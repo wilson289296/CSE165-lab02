@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <time.h>
 
 #if defined WIN32
 #include <freeglut.h>
@@ -228,6 +229,61 @@ void appMouseFunc(int b, int s, int x, int y) {
 				game.setelement(mx,my,game.circleturn); //sets slot to appropriate piece
 				if(game.circleturn){
 					printstring = "It's now circle's turn!";
+					//AI SECTION
+					//AI will control cross
+					//move when it's cross's turn
+					if(game.issingleplayer && !game.ended){
+						bool aiactive = true;
+						int tryx, tryy;
+						int potential;
+						while(aiactive){
+							srand(time(NULL));
+							potential = rand() % 9 + 1;
+							switch(potential){
+								case 1:
+									tryx = 0;
+									tryy = 0;
+									break;
+								case 2:
+									tryx = 1;
+									tryy = 0;
+									break;
+								case 3:
+									tryx = 2;
+									tryy = 0;
+									break;
+								case 4:
+									tryx = 0;
+									tryy = 1;
+									break;
+								case 5:
+									tryx = 1;
+									tryy = 1;
+									break;
+								case 6:
+									tryx = 2;
+									tryy = 1;
+									break;
+								case 7:
+									tryx = 0;
+									tryy = 2;
+									break;
+								case 8:
+									tryx = 1;
+									tryy = 2;
+									break;
+								case 9:
+									tryx = 2;
+									tryy = 2;
+									break;
+							}
+							if(!game.ispopulated(tryx,tryy)){
+								game.setelement(tryx,tryy,game.circleturn);
+								aiactive = false;
+								printstring = "It's now cross's turn!";
+							}	
+						}
+					}					
 				} else {
 					printstring = "It's now cross's turn!";
 				}
@@ -252,6 +308,9 @@ void appMouseFunc(int b, int s, int x, int y) {
 		}
 	}
 	
+	
+	
+	
 	//checks results after input
 	if (game.checkresults() == 1 || game.checkresults() == 2 || game.checkresults() == 3){
 		game.ended = true;
@@ -266,10 +325,14 @@ void appMouseFunc(int b, int s, int x, int y) {
 		game.over = true;
 	}
 	
+	
+	
+	
 	// Redraw the scene by calling appDrawScene above
 	// so that the point we added above will get painted
 	glutPostRedisplay();
 }
+
 
 void appMotionFunc(int x, int y) {
 	//-------------------------------------------------------
